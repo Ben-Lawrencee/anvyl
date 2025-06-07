@@ -1,7 +1,6 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-pub use crate::ast::evaluator::*;
 pub use crate::ast::lexer::*;
 pub use crate::ast::parser::*;
 

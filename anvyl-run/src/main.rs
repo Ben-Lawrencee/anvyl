@@ -43,9 +43,4 @@ fn main() {
     }
 
     println!("No diagnostics found, proceeding to evaluation...");
-
-    let mut eval = ASTEvaluator::new();
-    ast.visit(&mut eval);
-
-    println!("Result: {:?}", eval.last_value);
 }
