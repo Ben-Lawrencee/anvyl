@@ -3,12 +3,7 @@ use std::{cell::RefCell, rc::Rc};
 use anvyl_compiler::prelude::*;
 
 fn main() {
-    let input = "
-        let x = 5;
-        let y = 10;
-        let z = x + y;
-        let result = z * 2;
-    ";
+    let input = "7 + 3 * (2 - 1)";
 
     let mut lexer = Lexer::new(input);
     let mut tokens = Vec::new();
