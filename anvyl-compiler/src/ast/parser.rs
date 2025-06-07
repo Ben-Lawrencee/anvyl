@@ -1,9 +1,6 @@
 use std::cell::Cell;
 
-use crate::{
-    ast::{ASTBinaryOperator, ASTBinaryOperatorKind},
-    prelude::*,
-};
+use crate::prelude::*;
 
 pub struct Counter {
     value: Cell<usize>,
