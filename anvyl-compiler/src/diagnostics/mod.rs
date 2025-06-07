@@ -1,7 +1,7 @@
 use std::vec::IntoIter;
 
-use crate::prelude::printer::DiagnosticsPrinter;
 pub use crate::prelude::*;
+use crate::{ast::syntax::SyntaxColors, prelude::printer::DiagnosticsPrinter};
 
 pub mod printer;
 
@@ -64,7 +64,14 @@ impl DiagnosticsBag {
     }
 
     pub fn report_expected_expression(&mut self, found: &Token) {
-        let message = format!("Expected expression, found {}", found.kind);
+        let message = match found.kind.is_keyword() {
+            true => format!(
+                "Expected expression, found '{}' keyword",
+                SyntaxColors::keyword().apply_to(found.kind.to_string())
+            ),
+            false => format!("Expected expression, found '{}'", found.kind),
+        };
+
         self.report_error(message, found.span.clone());
     }
 }

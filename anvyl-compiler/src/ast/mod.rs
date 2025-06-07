@@ -4,6 +4,7 @@ pub mod expressions;
 pub mod lexer;
 pub mod parser;
 pub mod printer;
+pub mod syntax;
 
 pub struct AST {
     pub statements: Vec<ASTStatement>,

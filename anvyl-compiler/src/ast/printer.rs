@@ -1,6 +1,4 @@
-use console::Style;
-
-use crate::prelude::*;
+use crate::{ast::syntax::SyntaxColors, prelude::*};
 
 pub struct ASTPrinter {
     indent: usize,
@@ -9,8 +7,6 @@ pub struct ASTPrinter {
 
 impl ASTPrinter {
     const LEVEL_INDENT: usize = 2;
-    const NUMBER_COLOR: Style = Style::new().cyan();
-    const TEXT_COLOR: Style = Style::new().white();
 
     pub fn new() -> Self {
         Self {
@@ -23,9 +19,8 @@ impl ASTPrinter {
         self.result.clone()
     }
 
-    fn push_colored(&mut self, text: impl Into<String>, color: Style) {
-        self.result
-            .push_str(&format!("{}", color.apply_to(text.into())));
+    fn push(&mut self, text: impl Into<String>) {
+        self.result.push_str(&text.into());
     }
 
     fn add_whitespace(&mut self) {
@@ -39,27 +34,36 @@ impl ASTPrinter {
 
 impl ASTVisitor for ASTPrinter {
     fn visit_error(&mut self, span: &TextSpan) {
-        self.push_colored(span.literal.clone(), Self::TEXT_COLOR);
+        self.push(
+            SyntaxColors::text()
+                .apply_to(span.literal.clone())
+                .to_string(),
+        );
     }
 
     fn visit_number(&mut self, expression: &ASTNumberExpression) {
-        self.push_colored(expression.number().to_string(), Self::NUMBER_COLOR);
+        self.push(
+            SyntaxColors::number()
+                .apply_to(expression.number())
+                .to_string(),
+        );
     }
 
     fn visit_binary_expression(&mut self, expression: &ASTBinaryExpression) {
         self.visit_expression(&expression.left);
         self.add_whitespace();
-        self.push_colored(
-            expression.operator.token.span.literal.clone(),
-            Self::TEXT_COLOR,
+        self.push(
+            SyntaxColors::text()
+                .apply_to(expression.operator.token.span.literal.clone())
+                .to_string(),
         );
         self.add_whitespace();
         self.visit_expression(&expression.right);
     }
 
     fn visit_parenthesized_expression(&mut self, expression: &ASTParenthesizedExpression) {
-        self.push_colored("(", Self::TEXT_COLOR);
+        self.push(SyntaxColors::text().apply_to("(").to_string());
         self.visit_expression(&expression.expression);
-        self.push_colored(")", Self::TEXT_COLOR);
+        self.push(SyntaxColors::text().apply_to(")").to_string());
     }
 }

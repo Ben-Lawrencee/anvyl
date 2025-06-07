@@ -1,8 +1,8 @@
 use std::cmp;
 
-use console::style;
+use console::Style;
 
-use crate::prelude::*;
+use crate::{ast::syntax::SyntaxColors, prelude::*};
 
 pub struct DiagnosticsPrinter<'a> {
     text: &'a SourceText,
@@ -42,11 +42,16 @@ impl<'a> DiagnosticsPrinter<'a> {
 
         let error_message = Self::format_message(diagnostic, indent);
 
-        let colored = Self::apply_diagnostic_color(&diagnostic.kind, span);
+        let color = Self::get_diagnostic_color(&diagnostic.kind);
 
         format!(
             "{}{}{}\n{}\n{}\n{}",
-            prefix, colored, suffix, arrow_pointers, arrow_line, error_message,
+            prefix,
+            color.underlined().apply_to(span),
+            suffix,
+            arrow_pointers,
+            arrow_line,
+            error_message,
         )
     }
 
@@ -61,7 +66,7 @@ impl<'a> DiagnosticsPrinter<'a> {
         let prefix_start = cmp::max(0, column as isize - PREFIX_LENGTH as isize) as usize;
         let prefix_end = column;
 
-        let suffix_start = cmp::min(column + span_length + 1, line.len());
+        let suffix_start = cmp::min(column + span_length, line.len());
         let suffix_end = cmp::min(suffix_start + PREFIX_LENGTH, line.len());
 
         let prefix = &line[prefix_start..prefix_end];
@@ -77,13 +82,10 @@ impl<'a> DiagnosticsPrinter<'a> {
         (arrow_pointers, arrow_line)
     }
 
-    fn apply_diagnostic_color(
-        kind: &DiagnosticKind,
-        message: impl Into<String>,
-    ) -> console::StyledObject<String> {
+    fn get_diagnostic_color(kind: &DiagnosticKind) -> Style {
         match kind {
-            DiagnosticKind::Error => style(message.into()).red(),
-            DiagnosticKind::Warning => style(message.into()).yellow(),
+            DiagnosticKind::Error => SyntaxColors::error(),
+            DiagnosticKind::Warning => SyntaxColors::warning(),
         }
     }
 
