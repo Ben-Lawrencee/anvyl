@@ -1,0 +1,25 @@
+import components::*;
+import controllers::chat_controller;
+import context::{AuthContext, ChatContext};
+import react::*;
+
+rename_props(ChatViewArguments)
+pub default component ChatRoom(room: string) {
+	const { user } = use(AuthContext)
+	const chat = chat_controller(8080, room, user)
+	const messages = chat.get_messages();
+	
+	const selected: string? = stateful(undefiend);
+
+	callback onMessageClicked(messageID: string) {
+		selected = messageID;
+	}
+
+	return (
+		<ChatContext value={chat.context}>
+			<Column gap=2>
+				<ChatMessages #messages #selected #onMessageClicked />
+			</Column>
+		</ChatContext>
+	)
+}
