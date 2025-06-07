@@ -1,6 +1,5 @@
 use crate::prelude::{TextSpan, Token};
 
-pub mod evaluator;
 pub mod lexer;
 pub mod parser;
 
