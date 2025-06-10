@@ -1,0 +1,1 @@
+Perhaps there is a way to scope all css to the component and it's children at compile time?
