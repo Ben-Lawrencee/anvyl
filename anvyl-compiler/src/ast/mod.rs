@@ -4,6 +4,7 @@ pub mod expressions;
 pub mod lexer;
 pub mod parser;
 pub mod printer;
+pub mod statements;
 pub mod syntax;
 
 pub struct AST {
@@ -34,34 +35,11 @@ impl AST {
     }
 }
 
-#[derive(Debug)]
-pub enum ASTStatementKind {
-    Expression(ASTExpression),
-}
-
-#[derive(Debug)]
-pub struct ASTStatement {
-    kind: ASTStatementKind,
-}
-
-impl ASTStatement {
-    pub fn new(kind: ASTStatementKind) -> Self {
-        Self { kind }
-    }
-
-    pub fn expression(expr: ASTExpression) -> Self {
-        ASTStatement::new(ASTStatementKind::Expression(expr))
-    }
-
-    pub fn kind(&self) -> &ASTStatementKind {
-        &self.kind
-    }
-}
-
 pub trait ASTVisitor {
     fn default_visit_statement(&mut self, statement: &ASTStatement) {
         match statement.kind() {
             ASTStatementKind::Expression(expr) => self.visit_expression(expr),
+            ASTStatementKind::LetStatement(let_stmt) => self.visit_let_statement(let_stmt),
         }
     }
 
@@ -71,9 +49,10 @@ pub trait ASTVisitor {
 
     fn default_visit_expression(&mut self, expression: &ASTExpression) {
         match expression.kind() {
-            ASTExpressionKind::Error(span) => self.visit_error(span),
-            ASTExpressionKind::Number(expr) => self.visit_number(expr),
+            ASTExpressionKind::Error(span) => self.visit_error_expression(span),
+            ASTExpressionKind::Number(expr) => self.visit_number_expression(expr),
             ASTExpressionKind::Binary(expr) => self.visit_binary_expression(expr),
+            ASTExpressionKind::Variable(expr) => self.visit_variable_expression(expr),
             ASTExpressionKind::Parenthesized(parenthesized) => {
                 self.visit_parenthesized_expression(parenthesized)
             }
@@ -84,16 +63,15 @@ pub trait ASTVisitor {
         self.default_visit_expression(expression);
     }
 
-    fn visit_error(&mut self, span: &TextSpan);
+    fn visit_variable_expression(&mut self, expression: &ASTVariableExpression);
 
-    fn visit_number(&mut self, expression: &ASTNumberExpression);
+    fn visit_let_statement(&mut self, let_statement: &ASTLetStatement);
 
-    fn visit_binary_expression(&mut self, expression: &ASTBinaryExpression) {
-        self.visit_expression(&expression.left);
-        self.visit_expression(&expression.right);
-    }
+    fn visit_error_expression(&mut self, span: &TextSpan);
 
-    fn visit_parenthesized_expression(&mut self, expression: &ASTParenthesizedExpression) {
-        self.visit_expression(&expression.expression);
-    }
+    fn visit_number_expression(&mut self, expression: &ASTNumberExpression);
+
+    fn visit_binary_expression(&mut self, expression: &ASTBinaryExpression);
+
+    fn visit_parenthesized_expression(&mut self, expression: &ASTParenthesizedExpression);
 }
