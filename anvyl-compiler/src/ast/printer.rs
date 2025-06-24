@@ -73,7 +73,7 @@ impl ASTVisitor for ASTPrinter {
 
     fn visit_parenthesized_expression(&mut self, paren_expr: &ASTParenthesizedExpression) {
         self.push(SyntaxColors::text().apply_to("(").to_string());
-        self.visit_expression(&paren_expr.expression);
+        self.visit_expression(&paren_expr.inner);
         self.push(SyntaxColors::text().apply_to(")").to_string());
     }
 

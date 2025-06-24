@@ -1,9 +1,9 @@
 use std::rc::Rc;
 
-use anvyl_compiler::prelude::*;
+use anvyl_compiler::{ast::evaluator::ASTEvaluator, prelude::*};
 
 fn main() {
-    let input = "let a = 10; let b = 20; let c = a + b;";
+    let input = "let a = 10 + 11; let b = 20; let c = a * b;";
 
     let mut lexer = Lexer::new(input);
     let mut tokens = Vec::new();
@@ -45,4 +45,9 @@ fn main() {
     }
 
     println!("No diagnostics found, proceeding to evaluation...");
+
+    let mut eval = ASTEvaluator::new();
+    ast.visit(&mut eval);
+
+    println!("Result: {:?}", eval.last_value);
 }

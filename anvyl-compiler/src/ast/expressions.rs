@@ -34,7 +34,7 @@ impl ASTExpression {
     pub fn parenthesized(expression: ASTExpression) -> Self {
         ASTExpression::new(ASTExpressionKind::Parenthesized(
             ASTParenthesizedExpression {
-                expression: Box::new(expression),
+                inner: Box::new(expression),
             },
         ))
     }
@@ -105,7 +105,7 @@ impl ASTBinaryOperator {
 
 #[derive(Debug)]
 pub struct ASTParenthesizedExpression {
-    pub(crate) expression: Box<ASTExpression>,
+    pub(crate) inner: Box<ASTExpression>,
 }
 
 #[derive(Debug)]
