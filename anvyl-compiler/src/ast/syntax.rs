@@ -17,8 +17,12 @@ impl SyntaxColors {
         Style::new().cyan()
     }
 
+    pub fn variable() -> Style {
+        Style::new().green()
+    }
+
     pub fn text() -> Style {
-        Style::new().white()
+        Style::new().bright().white()
     }
 
     pub fn string() -> Style {

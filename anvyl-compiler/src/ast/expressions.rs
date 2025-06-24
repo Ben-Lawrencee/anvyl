@@ -6,6 +6,7 @@ pub enum ASTExpressionKind {
     Number(ASTNumberExpression),
     Binary(ASTBinaryExpression),
     Parenthesized(ASTParenthesizedExpression),
+    Variable(ASTVariableExpression),
 }
 
 #[derive(Debug)]
@@ -36,6 +37,12 @@ impl ASTExpression {
                 expression: Box::new(expression),
             },
         ))
+    }
+
+    pub fn identifier(identifier: Token) -> Self {
+        ASTExpression::new(ASTExpressionKind::Variable(ASTVariableExpression::new(
+            identifier,
+        )))
     }
 
     pub fn error(span: TextSpan) -> Self {
@@ -99,4 +106,19 @@ impl ASTBinaryOperator {
 #[derive(Debug)]
 pub struct ASTParenthesizedExpression {
     pub(crate) expression: Box<ASTExpression>,
+}
+
+#[derive(Debug)]
+pub struct ASTVariableExpression {
+    pub(crate) identifier: Token,
+}
+
+impl ASTVariableExpression {
+    pub fn new(identifier: Token) -> Self {
+        Self { identifier }
+    }
+
+    pub fn identifier(&self) -> &str {
+        &self.identifier.span.literal
+    }
 }
