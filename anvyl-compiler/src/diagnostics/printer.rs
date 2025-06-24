@@ -16,7 +16,7 @@ impl<'a> DiagnosticsPrinter<'a> {
         Self { text, diagnostics }
     }
 
-    /// Stringifies the diagnostic .
+    /// Stringifies the diagnostic.
     ///
     /// It uses the following format:
     ///
@@ -63,8 +63,11 @@ impl<'a> DiagnosticsPrinter<'a> {
     }
 
     fn get_line_window(span_length: usize, line: &str, column: usize) -> (&str, &str, &str) {
-        let prefix_start = cmp::max(0, column as isize - PREFIX_LENGTH as isize) as usize;
-        let prefix_end = column;
+        let prefix_start = cmp::min(
+            cmp::max(0, column as isize - PREFIX_LENGTH as isize) as usize,
+            line.len(),
+        );
+        let prefix_end = cmp::min(column, line.len());
 
         let suffix_start = cmp::min(column + span_length, line.len());
         let suffix_end = cmp::min(suffix_start + PREFIX_LENGTH, line.len());
