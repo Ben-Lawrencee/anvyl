@@ -5,10 +5,9 @@ pub enum TokenKind {
     /// Represents a failure in syntax.
     Bad,
 
-    // Literals
-    Asterisk,
+    // Punctuation
     Colon,
-    SemiColon,
+    Semicolon,
     LeftBrace,
     RightBrace,
     LeftParen,
@@ -27,53 +26,132 @@ pub enum TokenKind {
     Backslash,
     SingleQuote,
     DoubleQuote,
+    Equals,
+
+    // Arithmetic Operators
     Plus,
     Minus,
     Slash,
-    Equals,
+    Asterisk,
 
+    // Keywords
+    Let,
+    If,
+    Else,
+
+    // Literals
     Number(i64),
+    Identifier,
 
     // Hidden tokens
-    /// Spaces, tabs, and newlines.
+    /// Spaces, tabs.
     Whitespace,
+    /// Represents a newline character.
+    Newline,
     /// End of file token.
     EOF,
 }
 
 impl TokenKind {
-    fn to_string(&self) -> String {
-        match self {
-            TokenKind::Bad => "Bad".to_string(),
-            TokenKind::Asterisk => "*".to_string(),
-            TokenKind::Colon => ":".to_string(),
-            TokenKind::SemiColon => ";".to_string(),
-            TokenKind::LeftBrace => "{".to_string(),
-            TokenKind::RightBrace => "}".to_string(),
-            TokenKind::LeftParen => "(".to_string(),
-            TokenKind::RightParen => ")".to_string(),
-            TokenKind::LeftChevron => "<".to_string(),
-            TokenKind::RightChevron => ">".to_string(),
-            TokenKind::Amperstand => "&".to_string(),
-            TokenKind::Percent => "%".to_string(),
-            TokenKind::Comma => ",".to_string(),
-            TokenKind::Period => ".".to_string(),
-            TokenKind::Hashtag => "#".to_string(),
-            TokenKind::Exclamation => "!".to_string(),
-            TokenKind::Question => "?".to_string(),
-            TokenKind::Tilde => "~".to_string(),
-            TokenKind::Pipe => "|".to_string(),
-            TokenKind::Backslash => "\\".to_string(),
-            TokenKind::SingleQuote => "'".to_string(),
-            TokenKind::DoubleQuote => "\"".to_string(),
-            TokenKind::Plus => "+".to_string(),
-            TokenKind::Minus => "-".to_string(),
-            TokenKind::Slash => "/".to_string(),
-            TokenKind::Equals => "=".to_string(),
-            TokenKind::Number(n) => n.to_string(),
-            TokenKind::Whitespace => "Whitespace".to_string(),
-            TokenKind::EOF => "EOF".to_string(),
-        }
+    pub fn to_string(&self) -> String {
+        let str = match self {
+            // Error token
+            TokenKind::Bad => "Bad",
+
+            // Punctuation
+            TokenKind::Colon => ":",
+            TokenKind::Semicolon => ";",
+            TokenKind::LeftBrace => "{",
+            TokenKind::RightBrace => "}",
+            TokenKind::LeftParen => "(",
+            TokenKind::RightParen => ")",
+            TokenKind::LeftChevron => "<",
+            TokenKind::RightChevron => ">",
+            TokenKind::Amperstand => "&",
+            TokenKind::Percent => "%",
+            TokenKind::Comma => ",",
+            TokenKind::Period => ".",
+            TokenKind::Hashtag => "#",
+            TokenKind::Exclamation => "!",
+            TokenKind::Question => "?",
+            TokenKind::Tilde => "~",
+            TokenKind::Pipe => "|",
+            TokenKind::Backslash => "\\",
+            TokenKind::SingleQuote => "'",
+            TokenKind::DoubleQuote => "\"",
+            TokenKind::Equals => "=",
+
+            // Arithmetic Operators
+            TokenKind::Plus => "+",
+            TokenKind::Minus => "-",
+            TokenKind::Asterisk => "*",
+            TokenKind::Slash => "/",
+
+            // Keywords
+            TokenKind::Let => "let",
+            TokenKind::If => "if",
+            TokenKind::Else => "else",
+
+            // Literals
+            TokenKind::Number(n) => &n.to_string(),
+            TokenKind::Identifier => "Identifier",
+
+            // Hidden tokens
+            TokenKind::Whitespace => "Whitespace",
+            TokenKind::Newline => "Newline",
+            TokenKind::EOF => "EOF",
+        };
+
+        str.to_string()
+    }
+
+    pub fn is_bad(&self) -> bool {
+        matches!(self, TokenKind::Bad)
+    }
+
+    pub fn is_keyword(&self) -> bool {
+        matches!(self, TokenKind::Let | TokenKind::If | TokenKind::Else)
+    }
+
+    pub fn is_punctuation(&self) -> bool {
+        matches!(
+            self,
+            TokenKind::Colon
+                | TokenKind::Semicolon
+                | TokenKind::LeftBrace
+                | TokenKind::RightBrace
+                | TokenKind::LeftParen
+                | TokenKind::RightParen
+                | TokenKind::LeftChevron
+                | TokenKind::RightChevron
+                | TokenKind::Amperstand
+                | TokenKind::Percent
+                | TokenKind::Comma
+                | TokenKind::Period
+                | TokenKind::Hashtag
+                | TokenKind::Exclamation
+                | TokenKind::Question
+                | TokenKind::Tilde
+                | TokenKind::Pipe
+                | TokenKind::Backslash
+                | TokenKind::SingleQuote
+                | TokenKind::DoubleQuote
+                | TokenKind::Equals
+        )
+    }
+
+    pub fn is_arithmetic_operator(&self) -> bool {
+        matches!(
+            self,
+            TokenKind::Plus | TokenKind::Minus | TokenKind::Slash | TokenKind::Asterisk
+        )
+    }
+
+    pub fn is_whitespace(&self) -> bool {
+        matches!(
+            self,
+            TokenKind::Whitespace | TokenKind::Newline | TokenKind::EOF
+        )
     }
 }
 
@@ -98,7 +176,7 @@ impl From<char> for TokenKind {
             '.' => TokenKind::Period,
             '#' => TokenKind::Hashtag,
             ':' => TokenKind::Colon,
-            ';' => TokenKind::SemiColon,
+            ';' => TokenKind::Semicolon,
             '!' => TokenKind::Exclamation,
             '?' => TokenKind::Question,
             '~' => TokenKind::Tilde,
@@ -111,6 +189,7 @@ impl From<char> for TokenKind {
             '}' => TokenKind::RightBrace,
             '\\' => TokenKind::Backslash,
             '\'' => TokenKind::SingleQuote,
+            '\n' => TokenKind::Newline,
             _ => TokenKind::Bad,
         }
     }
@@ -138,6 +217,14 @@ impl TextSpan {
 
     pub fn end(&self) -> usize {
         self.end
+    }
+
+    pub fn get_text(&self) -> &str {
+        &self.literal
+    }
+
+    pub fn clone_text(&self) -> String {
+        self.literal.clone()
     }
 
     pub fn length(&self) -> usize {
@@ -202,9 +289,24 @@ impl<'a> Lexer<'a> {
             return TokenKind::Number(number);
         }
 
+        if c == '\n' {
+            self.consume();
+            return TokenKind::Newline;
+        }
+
         if Lexer::is_whitespace(c) {
             self.consume_whitespace();
             return TokenKind::Whitespace;
+        }
+
+        if Lexer::is_identifier(c) {
+            let identifier = self.consume_identifier();
+            return match identifier.as_str() {
+                "let" => TokenKind::Let,
+                "if" => TokenKind::If,
+                "else" => TokenKind::Else,
+                _ => TokenKind::Identifier,
+            };
         }
 
         self.consume_punctuation()
@@ -223,15 +325,23 @@ impl<'a> Lexer<'a> {
     }
 
     fn is_whitespace(c: char) -> bool {
-        c.is_whitespace()
+        c != '\n' && c.is_whitespace()
     }
 
     fn is_digit(c: char) -> bool {
         c.is_digit(10)
     }
 
+    fn is_identifier(c: char) -> bool {
+        c.is_alphabetic() || c == '_'
+    }
+
     fn consume_whitespace(&mut self) -> String {
         self.consume_while(Lexer::is_whitespace)
+    }
+
+    fn consume_identifier(&mut self) -> String {
+        self.consume_while(Lexer::is_identifier)
     }
 
     fn consume_punctuation(&mut self) -> TokenKind {
