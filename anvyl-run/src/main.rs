@@ -1,9 +1,9 @@
-use std::{cell::RefCell, rc::Rc};
+use std::rc::Rc;
 
 use anvyl_compiler::prelude::*;
 
 fn main() {
-    let input = "7 + 3 * (2 - 1)";
+    let input = "let a = 10; let b = 20; let c = a + b;";
 
     let mut lexer = Lexer::new(input);
     let mut tokens = Vec::new();
@@ -12,21 +12,28 @@ fn main() {
         tokens.push(token);
     }
 
-    println!("Tokens: {:?}", tokens);
+    println!("Tokens:");
+    for token in &tokens {
+        println!("  {:?}", token);
+    }
+    println!("");
 
-    let diagnostics: DiagnosticsBagCell = Rc::new(RefCell::new(DiagnosticsBag::new()));
+    let diagnostics: DiagnosticsBagCell = DiagnosticsBag::new_ref_cell();
     let mut ast = AST::new();
     let mut parser = Parser::new(tokens, Rc::clone(&diagnostics));
 
+    println!("Parsing statements...");
     while let Some(stmt) = parser.next_statement() {
+        println!("  {:?}", stmt);
         ast.add_statement(stmt);
     }
+    println!("");
 
-    println!("Added statements");
     ast.visualize();
 
     let diagnostics_binding = diagnostics.borrow();
     if !diagnostics_binding.is_empty() {
+        println!("");
         println!("Diagnostics found:");
         let source_text = SourceText::new(input);
         let printer = Diagnostic::printer(&source_text, &diagnostics_binding.diagnostics);

@@ -1,4 +1,4 @@
-use std::vec::IntoIter;
+use std::{cell::RefCell, rc::Rc, vec::IntoIter};
 
 pub use crate::prelude::*;
 use crate::{ast::syntax::SyntaxColors, prelude::printer::DiagnosticsPrinter};
@@ -42,6 +42,10 @@ impl DiagnosticsBag {
         Self {
             diagnostics: Vec::new(),
         }
+    }
+
+    pub fn new_ref_cell() -> DiagnosticsBagCell {
+        Rc::new(RefCell::new(Self::new()))
     }
 
     pub fn is_empty(&self) -> bool {
