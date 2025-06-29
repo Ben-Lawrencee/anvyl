@@ -67,6 +67,11 @@ impl DiagnosticsBag {
         self.report_error(message, found.span.clone());
     }
 
+    pub fn report_undeclared_variable(&mut self, identifier: String, span: TextSpan) {
+        let message = format!("Undeclared variable '{}'", identifier);
+        self.report_error(message, span);
+    }
+
     pub fn report_expected_expression(&mut self, found: &Token) {
         let message = match found.kind.is_keyword() {
             true => format!(

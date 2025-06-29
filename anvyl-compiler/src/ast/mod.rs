@@ -6,6 +6,7 @@ pub mod lexer;
 pub mod parser;
 pub mod printer;
 pub mod statements;
+pub mod symbols;
 pub mod syntax;
 
 pub struct AST {
