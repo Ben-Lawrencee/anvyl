@@ -35,10 +35,6 @@ impl ASTVisitor for ASTEvaluator {
         );
     }
 
-    fn visit_error_expression(&mut self, span: &crate::prelude::TextSpan) {
-        todo!()
-    }
-
     fn visit_number_expression(&mut self, expression: &crate::prelude::ASTNumberExpression) {
         self.last_value = Some(expression.number());
     }

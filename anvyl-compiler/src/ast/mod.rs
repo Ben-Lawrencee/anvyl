@@ -65,15 +65,20 @@ pub trait ASTVisitor {
         self.default_visit_expression(expression);
     }
 
-    fn visit_variable_expression(&mut self, expression: &ASTVariableExpression);
+    fn visit_variable_expression(&mut self, _expression: &ASTVariableExpression) {}
 
-    fn visit_let_statement(&mut self, let_statement: &ASTLetStatement);
+    fn visit_let_statement(&mut self, _let_statement: &ASTLetStatement) {}
 
-    fn visit_error_expression(&mut self, span: &TextSpan);
+    fn visit_error_expression(&mut self, _span: &TextSpan) {}
 
-    fn visit_number_expression(&mut self, expression: &ASTNumberExpression);
+    fn visit_number_expression(&mut self, _expression: &ASTNumberExpression) {}
 
-    fn visit_binary_expression(&mut self, expression: &ASTBinaryExpression);
+    fn visit_binary_expression(&mut self, expression: &ASTBinaryExpression) {
+        self.visit_expression(&expression.left);
+        self.visit_expression(&expression.right);
+    }
 
-    fn visit_parenthesized_expression(&mut self, expression: &ASTParenthesizedExpression);
+    fn visit_parenthesized_expression(&mut self, expression: &ASTParenthesizedExpression) {
+        self.visit_expression(&expression.inner);
+    }
 }
