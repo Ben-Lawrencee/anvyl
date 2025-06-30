@@ -1,0 +1,1 @@
+> What if there was no `throw` keyword, and instead there is a `panic()` function or something?
